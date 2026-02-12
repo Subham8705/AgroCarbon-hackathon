@@ -123,6 +123,16 @@ function getPolygonCentroid(points: [number, number][]): [number, number] {
   return [latSum / points.length, lngSum / points.length];
 }
 
+// Add constant at the top of the file
+const LAND_UNITS: { [key: string]: number } = {
+  acres: 1,
+  hectares: 2.47105,
+  bigha: 0.6198,
+  dhur: 0.00155,
+  cent: 0.01,
+  sqmeter: 0.000247105,
+};
+
 export default function FarmerDashboard() {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -138,6 +148,10 @@ export default function FarmerDashboard() {
 
   // Store all existing polygons from DB to check overlap
   const [globalPolygons, setGlobalPolygons] = useState<any[]>([]);
+
+  // Unit State
+  const [unit, setUnit] = useState<string>('acres');
+  const [displayValue, setDisplayValue] = useState<string>('');
 
   useEffect(() => {
     const fetchGlobalPolygons = async () => {
@@ -303,6 +317,9 @@ export default function FarmerDashboard() {
             yearsFollowed: docData.yearsFollowed || 1,
             acres: docData.acres || 0,
           });
+          // Initialize display value
+          setDisplayValue(docData.acres ? docData.acres.toString() : '');
+
           setEnvData({
             soc: docData.soc || 0,
             ndvi: docData.ndvi || 0,
@@ -465,6 +482,33 @@ export default function FarmerDashboard() {
     }
   };
 
+  const handleUnitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newUnit = e.target.value;
+    const currentAcres = Number(formData.acres) || 0;
+    const newDisplayVal = currentAcres / LAND_UNITS[newUnit];
+
+    // Only update display value, don't change underlying acres until input changes
+    setDisplayValue(newDisplayVal.toFixed(4).replace(/\.?0+$/, '')); // Approx display
+    setUnit(newUnit);
+  };
+
+  const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setDisplayValue(val);
+
+    if (val === '') {
+      setFormData({ ...formData, acres: '' });
+      return;
+    }
+
+    const numVal = parseFloat(val);
+    if (!isNaN(numVal) && numVal >= 0) {
+      // Convert BACK to Acres for storage
+      const acresVal = numVal * LAND_UNITS[unit];
+      setFormData({ ...formData, acres: acresVal });
+    }
+  };
+
   return (
     <DashboardLayout role="farmer">
       <div className="p-6 lg:p-8 space-y-8">
@@ -510,7 +554,7 @@ export default function FarmerDashboard() {
                 <MapPin className="w-6 h-6 text-accent" />
               </div>
               <div>
-                <div className="stat-value">{formData.acres || '--'} ac</div>
+                <div className="stat-value">{typeof formData.acres === 'number' ? formData.acres.toFixed(2) : formData.acres || '--'} ac</div>
                 <div className="stat-label">{t('land_registered')}</div>
               </div>
             </div>
@@ -658,24 +702,38 @@ export default function FarmerDashboard() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">{t('number_of_acres')}</label>
-                <input
-                  type="number"
-                  disabled={!isEditing}
-                  value={formData.acres}
-                  onChange={e => {
-                    const val = e.target.value;
-                    if (val === '') {
-                      setFormData({ ...formData, acres: '' });
-                    } else {
-                      const num = parseFloat(val);
-                      if (!isNaN(num) && num >= 0) {
-                        setFormData({ ...formData, acres: num });
-                      }
-                    }
-                  }}
-                  className="input-field disabled:bg-muted disabled:text-muted-foreground"
-                />
+                <label className="text-sm font-medium">{t('number_of_acres_in_unit', { unit: unit.charAt(0).toUpperCase() + unit.slice(1) })}</label>
+                <div className="flex gap-2">
+                  <div className="w-1/3 relative">
+                    <select
+                      disabled={!isEditing}
+                      value={unit}
+                      onChange={handleUnitChange}
+                      className="input-field appearance-none disabled:bg-muted disabled:text-muted-foreground"
+                    >
+                      <option value="acres">Acres</option>
+                      <option value="hectares">Hectares</option>
+                      <option value="bigha">Bigha</option>
+                      <option value="dhur">Dhur</option>
+                      <option value="cent">Cent</option>
+                      <option value="sqmeter">Square Meters</option>
+                    </select>
+                    <ChevronDown className="absolute right-3 top-2.5 w-5 h-5 text-muted-foreground pointer-events-none" />
+                  </div>
+                  <input
+                    type="number"
+                    disabled={!isEditing}
+                    value={displayValue}
+                    onChange={handleValueChange}
+                    className="input-field flex-1 disabled:bg-muted disabled:text-muted-foreground"
+                    placeholder="Area"
+                  />
+                </div>
+                {unit !== 'acres' && formData.acres !== '' && (
+                  <p className="text-xs text-muted-foreground">
+                    ≈ {Number(formData.acres).toFixed(4)} Acres
+                  </p>
+                )}
               </div>
             </div>
           </div>
