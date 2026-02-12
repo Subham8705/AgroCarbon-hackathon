@@ -2,7 +2,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Users, Search, Download, Filter, MapPin, Leaf, Calendar, Loader2, X, Check, Trash2, AlertCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
-import { collection, query, where, getDocs, deleteDoc, doc, updateDoc, writeBatch, deleteField } from 'firebase/firestore';
+import { collection, query, where, getDocs, deleteDoc, doc, getDoc, updateDoc, writeBatch, deleteField } from 'firebase/firestore';
 import { useAuth } from '@/contexts/AuthContext';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
@@ -112,13 +112,17 @@ export default function CompanyFarmers() {
         documentsVerified: true
       });
 
-      // 2. Update Farmer (Status = verified, Clear Meeting)
+      // 2. Update Farmer (Only if agent-managed)
       const farmerRef = doc(db, 'farmers', farmer.farmerId);
-      batch.update(farmerRef, {
-        onboardingStatus: 'verified',
-        'projectStatus.meetingDate': deleteField(),
-        'projectStatus.meetingSlot': deleteField()
-      });
+      const farmerSnap = await getDoc(farmerRef);
+
+      if (farmerSnap.exists()) {
+        batch.update(farmerRef, {
+          onboardingStatus: 'verified',
+          'projectStatus.meetingDate': deleteField(),
+          'projectStatus.meetingSlot': deleteField()
+        });
+      }
 
       await batch.commit();
 
@@ -135,20 +139,31 @@ export default function CompanyFarmers() {
   };
 
   const handleRejectDocs = async (farmer: Farmer) => {
-    if (!window.confirm("Reject documents? This will mark the farmer as 'Rejected' but keep them in the project list for now.")) {
+    if (!window.confirm("Reject documents? This will mark the farmer as 'Rejected'.")) {
       return;
     }
     try {
       const batch = writeBatch(db);
 
-      // Update Farmer Status (Notify Agent)
-      const farmerRef = doc(db, 'farmers', farmer.farmerId);
-      batch.update(farmerRef, {
-        onboardingStatus: 'rejected',
-        'projectStatus.status': 'rejected'
+      // Update Application Status
+      const appRef = doc(db, 'project_applications', farmer.id);
+      batch.update(appRef, {
+        status: 'rejected'
       });
 
+      // Update Farmer Status (Only if agent-managed)
+      const farmerRef = doc(db, 'farmers', farmer.farmerId);
+      const farmerSnap = await getDoc(farmerRef);
+
+      if (farmerSnap.exists()) {
+        batch.update(farmerRef, {
+          onboardingStatus: 'rejected',
+          'projectStatus.status': 'rejected'
+        });
+      }
+
       await batch.commit();
+      setFarmers(farmers.filter(f => f.id !== farmer.id));
       toast.success("Documents rejected. Status updated.");
     } catch (error) {
       console.error("Error rejecting docs:", error);
@@ -157,19 +172,23 @@ export default function CompanyFarmers() {
   };
 
   const handleRemove = async (farmer: Farmer) => {
-    if (!window.confirm("Are you sure you want to REMOVE this farmer from the project? Agent will be notified.")) {
+    if (!window.confirm("Are you sure you want to REMOVE this farmer from the project?")) {
       return;
     }
 
     try {
       const batch = writeBatch(db);
 
-      // 1. Update Farmer Status (Notify Agent)
+      // 1. Update Farmer Status (Only if agent-managed)
       const farmerRef = doc(db, 'farmers', farmer.farmerId);
-      batch.update(farmerRef, {
-        onboardingStatus: 'rejected',
-        'projectStatus.status': 'removed',
-      });
+      const farmerSnap = await getDoc(farmerRef);
+
+      if (farmerSnap.exists()) {
+        batch.update(farmerRef, {
+          onboardingStatus: 'rejected',
+          'projectStatus.status': 'removed',
+        });
+      }
 
       // 2. Remove Application (Cleanup Company View)
       const appRef = doc(db, 'project_applications', farmer.id);

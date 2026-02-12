@@ -156,19 +156,22 @@ export default function CompanyBatches() {
       });
 
       // Create batches from groups
-      const batchList: Batch[] = Object.entries(monthGroups).map(([monthKey, farmers]) => {
-        const totalAcres = farmers.reduce((sum, f) => sum + (f.farmerAcres || 0), 0);
-        const baselineTotal = farmers.reduce((sum, f) => sum + (f.farmerBaseCO2 || 0), 0);
-        const projectTotal = farmers.reduce((sum, f) => sum + (f.farmerTotalCO2 || 0), 0);
+      const batchList: Batch[] = Object.entries(monthGroups).map(([monthKey, monthFarmers]) => {
+        const totalAcres = monthFarmers.reduce((sum, f) => sum + (f.farmerAcres || 0), 0);
+        const baselineTotal = monthFarmers.reduce((sum, f) => sum + (f.farmerBaseCO2 || 0), 0);
+        const projectTotal = monthFarmers.reduce((sum, f) => sum + (f.farmerTotalCO2 || 0), 0);
+
+        // Use a Set to get unique farmer count
+        const uniqueFarmerCount = new Set(monthFarmers.map(f => f.farmerId)).size;
 
         return {
           id: monthKey,
-          month: farmers[0].monthLabel,
+          month: monthFarmers[0].monthLabel,
           monthKey,
-          farmerCount: farmers.length,
-          totalAcres,
-          baselineTotal,
-          projectTotal,
+          farmerCount: uniqueFarmerCount,
+          totalAcres: Number(totalAcres.toFixed(1)),
+          baselineTotal: Number(baselineTotal.toFixed(1)),
+          projectTotal: Number(projectTotal.toFixed(1)),
           status: 'pending' as const
         };
       });
