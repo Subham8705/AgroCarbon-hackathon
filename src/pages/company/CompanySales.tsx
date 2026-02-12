@@ -35,7 +35,7 @@ interface SaleBreakdown {
     transaction: Transaction;
     payouts: PayoutDetail[];
     companyShare: number; // 20%
-    platformFee: number; // 10%
+    platformFee: number; // 1%
 }
 
 interface PayoutRecord {
@@ -177,7 +177,7 @@ export default function CompanySales() {
                     transaction: tx,
                     payouts: Object.values(payouts),
                     companyShare: tx.totalAmount * 0.20,
-                    platformFee: tx.totalAmount * 0.10
+                    platformFee: tx.totalAmount * 0.01
                 });
             }
 
@@ -228,7 +228,7 @@ export default function CompanySales() {
             handler: async function (response: any) {
                 try {
                     // Record Payouts - One record per PLOT for granular tracking
-                    const pricePerCredit = transaction.pricePerUnit * 0.70;
+                    const pricePerCredit = transaction.pricePerUnit * 0.79;
 
                     for (const plot of payout.plots) {
                         const plotAmount = plot.credits * pricePerCredit;
@@ -299,7 +299,7 @@ export default function CompanySales() {
         }
 
         const totalToPay = unpaidPayouts.reduce((acc, p) => {
-            return acc + (p.creditsSold * transaction.pricePerUnit * 0.70);
+            return acc + (p.creditsSold * transaction.pricePerUnit * 0.79);
         }, 0);
 
         setProcessingPayout('ALL');
@@ -323,7 +323,7 @@ export default function CompanySales() {
             image: "https://cdn-icons-png.flaticon.com/512/2979/2979644.png",
             handler: async function (response: any) {
                 try {
-                    const pricePerCredit = transaction.pricePerUnit * 0.70;
+                    const pricePerCredit = transaction.pricePerUnit * 0.79;
                     const writes = [];
 
                     for (const payout of unpaidPayouts) {
@@ -403,7 +403,7 @@ export default function CompanySales() {
 
     const totalRevenue = sales.reduce((acc, curr) => acc + curr.transaction.totalAmount, 0);
     const totalFarmerPayout = sales.reduce((acc, curr) => {
-        const txPayout = curr.payouts.reduce((p, c) => p + (c.creditsSold * curr.transaction.pricePerUnit * 0.70), 0);
+        const txPayout = curr.payouts.reduce((p, c) => p + (c.creditsSold * curr.transaction.pricePerUnit * 0.79), 0);
         return acc + txPayout;
     }, 0);
 
@@ -434,7 +434,7 @@ export default function CompanySales() {
                         <div className="absolute top-0 right-0 p-4 opacity-10">
                             <Users className="w-24 h-24 text-emerald-600" />
                         </div>
-                        <div className="text-sm font-medium text-emerald-800 mb-2">Total Farmer Payouts (70%)</div>
+                        <div className="text-sm font-medium text-emerald-800 mb-2">Total Farmer Payouts (79%)</div>
                         <div className="text-3xl font-bold text-emerald-700">₹{totalFarmerPayout.toLocaleString()}</div>
                         <div className="mt-2 text-xs text-emerald-600">
                             Distributed to project farmers
@@ -448,7 +448,7 @@ export default function CompanySales() {
                         <div className="text-sm font-medium text-muted-foreground mb-2">Net Revenue (20%)</div>
                         <div className="text-3xl font-bold text-foreground">₹{(totalRevenue * 0.20).toLocaleString()}</div>
                         <div className="mt-2 text-xs text-muted-foreground">
-                            After platform fees (10%)
+                            After platform fees (1%)
                         </div>
                     </div>
                 </div>
@@ -506,8 +506,8 @@ export default function CompanySales() {
                                                         <th className="text-center py-2 font-medium text-muted-foreground">Credits</th>
                                                         <th className="text-right py-2 font-medium text-muted-foreground">Total Value</th>
                                                         <th className="text-right py-2 font-medium text-blue-600">Company (20%)</th>
-                                                        <th className="text-right py-2 font-medium text-amber-600">Platform (10%)</th>
-                                                        <th className="text-right py-2 font-medium text-emerald-600">Farmer (70%)</th>
+                                                        <th className="text-right py-2 font-medium text-amber-600">Platform (1%)</th>
+                                                        <th className="text-right py-2 font-medium text-emerald-600">Farmer (79%)</th>
                                                         <th className="text-center py-2 font-medium text-muted-foreground">Action</th>
                                                     </tr>
                                                 </thead>
@@ -515,8 +515,8 @@ export default function CompanySales() {
                                                     {item.payouts.map((payout) => {
                                                         const totalVal = payout.creditsSold * item.transaction.pricePerUnit;
                                                         const companyShare = totalVal * 0.20;
-                                                        const platformFee = totalVal * 0.10;
-                                                        const farmerShare = totalVal * 0.70;
+                                                        const platformFee = totalVal * 0.01;
+                                                        const farmerShare = totalVal * 0.79;
                                                         const paid = isPaid(item.transaction.id, payout.plotIds);
 
                                                         return (
@@ -562,7 +562,7 @@ export default function CompanySales() {
                                             {(() => {
                                                 const unpaidAmount = item.payouts
                                                     .filter(p => !isPaid(item.transaction.id, p.plotIds))
-                                                    .reduce((acc, p) => acc + (p.creditsSold * item.transaction.pricePerUnit * 0.70), 0);
+                                                    .reduce((acc, p) => acc + (p.creditsSold * item.transaction.pricePerUnit * 0.79), 0);
 
                                                 if (unpaidAmount <= 0) return null;
 

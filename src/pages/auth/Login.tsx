@@ -13,12 +13,6 @@ export default function Login() {
   });
   const [error, setError] = useState('');
 
-  const handlePhoneChange = (value: string) => {
-    // Allow only digits, maximum 10 digits
-    const sanitized = value.replace(/[^0-9]/g, '').slice(0, 10);
-    setFormData({ ...formData, phone: sanitized });
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -135,18 +129,16 @@ export default function Login() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Phone Field */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">Phone Number </label>
+              <label className="text-sm font-medium text-foreground">Phone Number</label>
               <div className="relative">
                 <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <input
                   type="tel"
                   required
                   value={formData.phone}
-                  onChange={(e) => handlePhoneChange(e.target.value)}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   className="input-field pl-12"
-                  placeholder="Enter 10-digit phone number"
-                  maxLength={10}
-                  pattern="[0-9]{10}"
+                  placeholder="Enter phone number"
                 />
               </div>
             </div>

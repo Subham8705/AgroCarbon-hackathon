@@ -681,7 +681,7 @@ export default function AgentRegisterFarmer() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label>Phone Number</Label>
+                                <Label>Phone Number (10 digits)</Label>
                                 <Input
                                     value={formData.phone}
                                     onChange={e => handlePhoneChange(e.target.value)}

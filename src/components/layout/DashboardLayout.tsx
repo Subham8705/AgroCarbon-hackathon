@@ -26,6 +26,9 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import NotificationBell from './NotificationBell';
+import { LanguageSwitcher } from '../LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
+import logo from '@/assets/logo.jpeg';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -98,6 +101,7 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { t } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
@@ -105,7 +109,10 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
     navigate('/');
   };
 
-  const items = navItems[role];
+  const items = navItems[role].map(item => ({
+    ...item,
+    label: role === 'farmer' ? t(item.label.toLowerCase().replace(' ', '_').replace('co₂', 'co2')) : item.label
+  }));
 
   return (
     <div className="h-screen bg-background flex overflow-hidden">
@@ -113,13 +120,12 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
       <aside className="hidden lg:flex flex-col w-64 bg-sidebar border-r border-sidebar-border h-full flex-shrink-0">
         {/* Logo */}
         <div className="p-6 border-b border-sidebar-border">
+
           <Link to={items[0]?.path || '/'} className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-xl ${roleColors[role]} flex items-center justify-center`}>
-              <Leaf className="w-6 h-6 text-white" />
-            </div>
+            <img src={logo} alt="AgroCarbon Logo" className="w-10 h-10 rounded-xl object-contain bg-white" />
             <div>
               <span className="text-lg font-display font-bold text-sidebar-foreground">AgroCarbon</span>
-              <div className="text-xs text-sidebar-foreground/60 capitalize">{role}</div>
+              <div className="text-xs text-sidebar-foreground/60 capitalize">{role === 'farmer' ? t('farmer') : role}</div>
             </div>
           </Link>
         </div>
@@ -142,7 +148,17 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
               </Link>
             );
           })}
-          {role === 'farmer' && <NotificationBell isSidebar />}
+          {role === 'farmer' && (
+            <div className="mt-auto">
+              <NotificationBell isSidebar />
+              <div className="px-4 py-2">
+                <div className="flex items-center justify-between text-sidebar-foreground/70">
+                  <span className="text-sm font-medium">Language</span>
+                  <LanguageSwitcher />
+                </div>
+              </div>
+            </div>
+          )}
         </nav>
 
         {/* User Section */}
@@ -153,7 +169,7 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-sm font-medium text-sidebar-foreground truncate">{user?.name}</div>
-              <div className="text-xs text-sidebar-foreground/60 capitalize">{role}</div>
+              <div className="text-xs text-sidebar-foreground/60 capitalize">{role === 'farmer' ? t('farmer') : role}</div>
             </div>
           </div>
           <button
@@ -161,7 +177,7 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
             className="flex items-center gap-2 w-full px-4 py-2 text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent rounded-lg transition-all"
           >
             <LogOut className="w-4 h-4" />
-            Sign Out
+            {t('logout')}
           </button>
         </div>
       </aside>
@@ -169,9 +185,7 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
       {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-card border-b border-border z-50 flex items-center justify-between px-4">
         <Link to={items[0]?.path || '/'} className="flex items-center gap-2">
-          <div className={`w-8 h-8 rounded-lg ${roleColors[role]} flex items-center justify-center`}>
-            <Leaf className="w-5 h-5 text-white" />
-          </div>
+          <img src={logo} alt="AgroCarbon Logo" className="w-8 h-8 rounded-lg object-contain bg-white" />
           <span className="font-display font-bold text-foreground">AgroCarbon</span>
         </Link>
         <button
@@ -210,7 +224,17 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
               </Link>
             );
           })}
-          {role === 'farmer' && <NotificationBell isSidebar />}
+          {role === 'farmer' && (
+            <div className="mt-auto">
+              <NotificationBell isSidebar />
+              <div className="px-4 py-2">
+                <div className="flex items-center justify-between text-sidebar-foreground/70">
+                  <span className="text-sm font-medium">Language</span>
+                  <LanguageSwitcher />
+                </div>
+              </div>
+            </div>
+          )}
         </nav>
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-sidebar-border">
           <button
@@ -218,7 +242,7 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
             className="flex items-center gap-2 w-full px-4 py-2 text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent rounded-lg transition-all"
           >
             <LogOut className="w-4 h-4" />
-            Sign Out
+            {t('logout')}
           </button>
         </div>
       </div>

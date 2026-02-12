@@ -31,18 +31,12 @@ export default function SignUp() {
   });
   const [error, setError] = useState('');
 
-  const handlePhoneChange = (value: string) => {
-    // Allow only digits, maximum 10 digits
-    const sanitized = value.replace(/[^0-9]/g, '').slice(0, 10);
-    setFormData({ ...formData, phone: sanitized });
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
     if (!formData.phone || formData.phone.length < 10) {
-      setError("Please enter a valid 10-digit phone number.");
+      setError("Please enter a valid phone number.");
       return;
     }
 
@@ -156,25 +150,25 @@ export default function SignUp() {
               {/* Role Selection */}
               <div className="space-y-3">
                 <label className="text-sm font-medium text-foreground">Select Role</label>
-                <div className="grid grid-cols-3 gap-2.5">
+                <div className="grid grid-cols-2 gap-3">
                   {roles.map((role) => (
                     <button
                       key={role.value}
                       type="button"
                       onClick={() => setFormData({ ...formData, role: role.value })}
-                      className={`p-3 rounded-xl border-2 transition-all text-left ${formData.role === role.value
+                      className={`p-4 rounded-xl border-2 transition-all text-left ${formData.role === role.value
                         ? 'border-primary bg-primary/5'
                         : 'border-border hover:border-primary/50'
                         }`}
                     >
-                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-1.5 ${formData.role === role.value
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-2 ${formData.role === role.value
                         ? 'bg-primary text-white'
                         : 'bg-secondary text-muted-foreground'
                         }`}>
                         {role.icon}
                       </div>
-                      <div className="font-medium text-foreground text-xs">{role.label}</div>
-                      <div className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{role.description}</div>
+                      <div className="font-medium text-foreground text-sm">{role.label}</div>
+                      <div className="text-xs text-muted-foreground mt-0.5">{role.description}</div>
                     </button>
                   ))}
                 </div>
@@ -268,18 +262,16 @@ export default function SignUp() {
 
               {/* Phone Field */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">Phone Number </label>
+                <label className="text-sm font-medium text-foreground">Phone Number</label>
                 <div className="relative">
                   <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <input
                     type="tel"
                     required
                     value={formData.phone}
-                    onChange={(e) => handlePhoneChange(e.target.value)}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     className="input-field pl-12"
-                    placeholder="Enter 10-digit phone number"
-                    maxLength={10}
-                    pattern="[0-9]{10}"
+                    placeholder="Enter phone number"
                   />
                 </div>
               </div>
