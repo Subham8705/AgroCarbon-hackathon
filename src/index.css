@@ -1,0 +1,358 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* AgroCarbon Design System - Agricultural Carbon Credit Platform */
+
+@layer base {
+  :root {
+    /* Core brand colors - Earthy green palette */
+    --background: 120 20% 98%;
+    --foreground: 150 25% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 150 25% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 150 25% 10%;
+
+    /* Primary - Deep forest green */
+    --primary: 142 72% 29%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary - Soft sage */
+    --secondary: 138 20% 92%;
+    --secondary-foreground: 142 72% 25%;
+
+    /* Muted - Neutral earth tones */
+    --muted: 120 10% 94%;
+    --muted-foreground: 150 10% 45%;
+
+    /* Accent - Warm amber for CTAs */
+    --accent: 38 92% 50%;
+    --accent-foreground: 38 92% 15%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 138 15% 88%;
+    --input: 138 15% 88%;
+    --ring: 142 72% 29%;
+
+    --radius: 0.75rem;
+
+    /* Role-specific colors */
+    --farmer: 142 72% 35%;
+    --farmer-foreground: 0 0% 100%;
+    --company: 217 91% 45%;
+    --company-foreground: 0 0% 100%;
+    --verifier: 280 65% 50%;
+    --verifier-foreground: 0 0% 100%;
+    --registry: 38 92% 50%;
+    --registry-foreground: 38 92% 12%;
+
+    /* Status colors */
+    --success: 142 72% 35%;
+    --warning: 38 92% 50%;
+    --info: 217 91% 55%;
+    --pending: 45 93% 47%;
+
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(142, 72%, 29%) 0%, hsl(160, 84%, 25%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0, 0%, 100%) 0%, hsl(120, 20%, 98%) 100%);
+    --gradient-farmer: linear-gradient(135deg, hsl(142, 72%, 35%) 0%, hsl(160, 70%, 30%) 100%);
+    --gradient-company: linear-gradient(135deg, hsl(217, 91%, 45%) 0%, hsl(230, 80%, 50%) 100%);
+    --gradient-verifier: linear-gradient(135deg, hsl(280, 65%, 50%) 0%, hsl(300, 60%, 45%) 100%);
+    --gradient-registry: linear-gradient(135deg, hsl(38, 92%, 50%) 0%, hsl(25, 90%, 45%) 100%);
+    --gradient-buyer: linear-gradient(135deg, hsl(190, 80%, 30%) 0%, hsl(200, 70%, 25%) 100%);
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(142, 72%, 29%, 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(142, 72%, 29%, 0.1), 0 2px 4px -2px hsl(142, 72%, 29%, 0.1);
+    --shadow-lg: 0 10px 15px -3px hsl(142, 72%, 29%, 0.1), 0 4px 6px -4px hsl(142, 72%, 29%, 0.1);
+    --shadow-xl: 0 20px 25px -5px hsl(142, 72%, 29%, 0.1), 0 8px 10px -6px hsl(142, 72%, 29%, 0.1);
+    --shadow-card: 0 2px 8px -2px hsl(142, 72%, 29%, 0.08), 0 4px 16px -4px hsl(142, 72%, 29%, 0.12);
+
+    /* Sidebar */
+    --sidebar-background: 142 25% 12%;
+    --sidebar-foreground: 120 20% 95%;
+    --sidebar-primary: 142 72% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 142 25% 18%;
+    --sidebar-accent-foreground: 120 20% 95%;
+    --sidebar-border: 142 25% 20%;
+    --sidebar-ring: 142 72% 45%;
+  }
+
+  .dark {
+    --background: 150 25% 8%;
+    --foreground: 120 20% 95%;
+
+    --card: 150 20% 12%;
+    --card-foreground: 120 20% 95%;
+
+    --popover: 150 20% 12%;
+    --popover-foreground: 120 20% 95%;
+
+    --primary: 142 72% 45%;
+    --primary-foreground: 150 25% 8%;
+
+    --secondary: 142 20% 18%;
+    --secondary-foreground: 120 20% 90%;
+
+    --muted: 150 15% 18%;
+    --muted-foreground: 120 10% 60%;
+
+    --accent: 38 92% 55%;
+    --accent-foreground: 38 92% 10%;
+
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 150 15% 20%;
+    --input: 150 15% 20%;
+    --ring: 142 72% 45%;
+
+    --sidebar-background: 150 25% 6%;
+    --sidebar-foreground: 120 20% 95%;
+    --sidebar-primary: 142 72% 50%;
+    --sidebar-primary-foreground: 150 25% 8%;
+    --sidebar-accent: 150 20% 12%;
+    --sidebar-accent-foreground: 120 20% 95%;
+    --sidebar-border: 150 15% 15%;
+    --sidebar-ring: 142 72% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'DM Sans', sans-serif;
+    @apply font-semibold tracking-tight;
+  }
+
+  /* Hide native password reveal button in Edge/Internet Explorer */
+  input[type="password"]::-ms-reveal,
+  input[type="password"]::-ms-clear {
+    display: none;
+  }
+}
+
+@layer components {
+  .card-elevated {
+    @apply bg-card rounded-xl border border-border/50;
+    box-shadow: var(--shadow-card);
+  }
+
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .gradient-farmer {
+    background: var(--gradient-farmer);
+  }
+
+  .gradient-company {
+    background: var(--gradient-company);
+  }
+
+  .gradient-verifier {
+    background: var(--gradient-verifier);
+  }
+
+  .gradient-registry {
+    background: var(--gradient-registry);
+  }
+
+  .gradient-buyer {
+    background: var(--gradient-buyer);
+  }
+
+  .role-badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+  }
+
+  .role-badge-farmer {
+    @apply role-badge bg-primary/10 text-primary;
+  }
+
+  .role-badge-company {
+    @apply role-badge;
+    background: hsl(217, 91%, 45%, 0.1);
+    color: hsl(217, 91%, 45%);
+  }
+
+  .role-badge-verifier {
+    @apply role-badge;
+    background: hsl(280, 65%, 50%, 0.1);
+    color: hsl(280, 65%, 50%);
+  }
+
+  .role-badge-registry {
+    @apply role-badge bg-accent/10 text-accent-foreground;
+  }
+
+  .stat-card {
+    @apply card-elevated p-6 flex flex-col gap-2;
+  }
+
+  .stat-value {
+    @apply text-3xl font-bold text-foreground;
+  }
+
+  .stat-label {
+    @apply text-sm text-muted-foreground;
+  }
+
+  .action-card {
+    @apply card-elevated p-6 cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 rounded-lg border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-medium text-primary-foreground transition-all duration-300;
+    background: var(--gradient-hero);
+    box-shadow: var(--shadow-md);
+  }
+
+  .btn-primary:hover {
+    @apply opacity-90;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-1px);
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-medium bg-secondary text-secondary-foreground border border-border hover:bg-secondary/80 transition-all duration-300;
+  }
+
+  .btn-accent {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-medium text-white transition-all duration-300;
+    background: var(--gradient-registry);
+    box-shadow: var(--shadow-md);
+  }
+
+  .btn-accent:hover {
+    @apply opacity-90;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-1px);
+  }
+
+  .status-badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium;
+  }
+
+  .status-pending {
+    @apply status-badge bg-yellow-100 text-yellow-800;
+  }
+
+  .status-approved {
+    @apply status-badge bg-green-100 text-green-800;
+  }
+
+  .status-rejected {
+    @apply status-badge bg-red-100 text-red-800;
+  }
+
+  .status-verified {
+    @apply status-badge bg-purple-100 text-purple-800;
+  }
+}
+
+/* Leaflet map custom styles */
+.leaflet-container {
+  @apply rounded-xl;
+  font-family: 'Inter', sans-serif;
+}
+
+.leaflet-control-zoom {
+  @apply border-none shadow-lg;
+}
+
+.leaflet-control-zoom a {
+  @apply bg-card text-foreground border-border;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-muted rounded-full;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary/20 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-primary/40;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse-green {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 hsl(142, 72%, 35%, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 0 0 10px hsl(142, 72%, 35%, 0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.4s ease-out forwards;
+}
+
+.animate-pulse-green {
+  animation: pulse-green 2s infinite;
+}
