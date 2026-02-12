@@ -85,7 +85,7 @@ export default function ProjectDesignDocument() {
                 registryName: registryName as any,
                 status: 'submitted',
                 submittedAt: new Date(),
-                documentUrl: `https://agrocarbon.storage/pdd/${user.id}_${Date.now()}.pdf`
+                documentUrl: `https://transpocarbon.storage/pdd/${user.id}_${Date.now()}.pdf`
             };
 
             await addDoc(collection(db, 'pdd_requests'), newRequest);

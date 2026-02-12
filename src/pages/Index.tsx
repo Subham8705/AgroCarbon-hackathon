@@ -11,7 +11,7 @@ export default function Index() {
             <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
               <Leaf className="w-6 h-6" />
             </div>
-            <span className="text-xl font-display font-bold">AgroCarbon</span>
+            <span className="text-xl font-display font-bold">TranspoCarbon</span>
           </div>
           <div className="flex items-center gap-4">
             <Link to="/login" className="text-white/80 hover:text-white transition-colors">Sign In</Link>
@@ -77,7 +77,7 @@ export default function Index() {
       {/* Footer */}
       <footer className="border-t border-border py-8">
         <div className="container mx-auto px-6 text-center text-sm text-muted-foreground">
-          © 2024 AgroCarbon. Empowering sustainable agriculture through carbon credits.
+          © 2024 TranspoCarbon. Empowering sustainable agriculture through carbon credits.
         </div>
       </footer>
     </div>

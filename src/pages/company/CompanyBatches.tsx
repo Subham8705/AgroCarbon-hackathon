@@ -739,7 +739,7 @@ export default function CompanyBatches() {
       key: RAZORPAY_KEY,
       amount: (selectedBatch.paymentAmount || 5000) * 100, // Amount in paise
       currency: "INR",
-      name: "AgroCarbon Verification",
+      name: "TranspoCarbon Verification",
       description: `Verification for Batch ${selectedBatch.month}`,
       image: "https://your-logo-url.com/logo.png", // Optional
       handler: async function (response: any) {
@@ -768,7 +768,7 @@ export default function CompanyBatches() {
         contact: user?.phone || "9999999999"
       },
       notes: {
-        address: "AgroCarbon Corporate Office"
+        address: "TranspoCarbon Corporate Office"
       },
       theme: {
         color: "#16a34a"

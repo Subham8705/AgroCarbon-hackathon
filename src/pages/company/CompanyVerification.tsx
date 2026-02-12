@@ -170,7 +170,7 @@ export default function CompanyVerification() {
       }
 
       setPddData({
-        companyName: (user as any)?.companyName || user?.name || 'AgroCarbon Project',
+        companyName: (user as any)?.companyName || user?.name || 'TranspoCarbon Project',
         region: (user as any)?.location || 'Telangana, India',
         startDate: user?.createdAt,
         totalFarmers: farmersCount,
@@ -298,14 +298,6 @@ export default function CompanyVerification() {
                     <Button
                       className="w-full"
                       onClick={() => handleSelectVerifier(verifier)}
-                      disabled={isDisabled && !isSelectedVerifier} // Allow clicking own button to potentially view results? For now just keep disabled logic as is or simple. 
-                      // Actually, if it says "Received Results", user might want to click it. But for now request is just text change.
-                      // The original code had disabled={isDisabled}. If I want to allow clicking "Received Results", I should un-disable it for the selected one.
-                      // But the prompt was strictly "button should be changed".
-                      // I will keep the original disabled logic which was `disabled={isDisabled}`. 
-                      // Wait, isDisabled is true if ANY request exists. So "Request Sent" button is disabled.
-                      // If I change text to "Received Results", it will still be disabled. That seems fine for a status indicator.
-
                       disabled={isDisabled}
                       variant={isSelectedVerifier ? "secondary" : "default"}
                     >

@@ -222,7 +222,7 @@ export default function CompanySales() {
             key: RAZORPAY_KEY,
             amount: totalAmountNum * 100, // Paise
             currency: "INR",
-            name: "AgroCarbon Payouts",
+            name: "TranspoCarbon Payouts",
             description: `Payout to ${payout.farmerName} for ${payout.creditsSold} credits`,
             image: "https://cdn-icons-png.flaticon.com/512/2979/2979644.png",
             handler: async function (response: any) {
@@ -318,7 +318,7 @@ export default function CompanySales() {
             key: RAZORPAY_KEY,
             amount: totalAmountNum * 100, // Paise
             currency: "INR",
-            name: "AgroCarbon Consolidated Payout",
+            name: "TranspoCarbon Consolidated Payout",
             description: `Bulk Payout for ${unpaidPayouts.length} farmers`,
             image: "https://cdn-icons-png.flaticon.com/512/2979/2979644.png",
             handler: async function (response: any) {

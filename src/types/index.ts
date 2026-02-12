@@ -161,7 +161,7 @@ export interface CO2EstimationParams {
   plotCoordinates?: { lat: number, lon: number }[];
 }
 
-export type PDDStatus = 'draft' | 'submitted' | 'registered' | 'rejected';
+export type PDDStatus = 'draft' | 'submitted' | 'registered' | 'rejected' | 'validated';
 
 export interface PDDRequest {
   id: string;

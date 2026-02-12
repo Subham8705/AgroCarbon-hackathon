@@ -133,7 +133,7 @@ export default function Marketplace() {
             key: RAZORPAY_KEY,
             amount: totalAmount * 100, // Paise
             currency: "INR",
-            name: "AgroCarbon Marketplace",
+            name: "TranspoCarbon Marketplace",
             description: `Purchase ${quantity} Carbon Credits from ${selectedCompany.companyName || selectedCompany.name}`,
             image: "https://cdn-icons-png.flaticon.com/512/2979/2979644.png",
             handler: async function (response: any) {

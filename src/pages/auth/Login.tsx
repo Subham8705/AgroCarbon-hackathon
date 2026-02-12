@@ -65,7 +65,7 @@ export default function Login() {
             <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center">
               <Leaf className="w-7 h-7" />
             </div>
-            <span className="text-2xl font-display font-bold">AgroCarbon</span>
+            <span className="text-2xl font-display font-bold">TranspoCarbon</span>
           </div>
 
           <div className="space-y-6">
@@ -95,7 +95,7 @@ export default function Login() {
           </div>
 
           <div className="text-sm text-white/60">
-            © 2024 AgroCarbon. All rights reserved.
+            © 2024 TranspoCarbon. All rights reserved.
           </div>
         </div>
 
@@ -112,7 +112,7 @@ export default function Login() {
             <div className="w-10 h-10 rounded-xl gradient-hero flex items-center justify-center">
               <Leaf className="w-6 h-6 text-white" />
             </div>
-            <span className="text-xl font-display font-bold text-foreground">AgroCarbon</span>
+            <span className="text-xl font-display font-bold text-foreground">TranspoCarbon</span>
           </div>
 
           <div className="text-center lg:text-left">

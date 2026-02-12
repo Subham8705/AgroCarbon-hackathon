@@ -186,7 +186,7 @@ export default function MyPDD() {
     };
 
     const pddData = {
-        companyName: (user as any)?.companyName || user?.name || 'AgroCarbon Project',
+        companyName: (user as any)?.companyName || user?.name || 'TranspoCarbon Project',
         region: projectStats.region,
         startDate: user?.createdAt,
         totalFarmers: projectStats.totalFarmers,

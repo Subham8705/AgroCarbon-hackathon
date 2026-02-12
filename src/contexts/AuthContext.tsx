@@ -112,7 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       // Create Auth User
       // Prefer email from data.email, else fallback to synthetic email from phone
-      const emailToUse = data.email && data.email.includes('@') ? data.email : `${data.phone}@agrocarbon.com`;
+      const emailToUse = data.email && data.email.includes('@') ? data.email : `${data.phone}@transpocarbon.com`;
 
       const userCredential = await createUserWithEmailAndPassword(auth, emailToUse, data.password);
       const firebaseUser = userCredential.user;
@@ -153,7 +153,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await signOut(auth);
       setUser(null);
-      localStorage.removeItem('agrocarbon_user'); // Cleanup legacy if exists
+      localStorage.removeItem('transpocarbon_user'); // Cleanup legacy if exists
     } catch (error) {
       console.error("Logout error", error);
     }

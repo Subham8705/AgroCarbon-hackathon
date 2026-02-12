@@ -122,9 +122,9 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
         <div className="p-6 border-b border-sidebar-border">
 
           <Link to={items[0]?.path || '/'} className="flex items-center gap-3">
-            <img src={logo} alt="AgroCarbon Logo" className="w-10 h-10 rounded-xl object-contain bg-white" />
+            <img src={logo} alt="TranspoCarbon Logo" className="w-10 h-10 rounded-xl object-contain bg-white" />
             <div>
-              <span className="text-lg font-display font-bold text-sidebar-foreground">AgroCarbon</span>
+              <span className="text-lg font-display font-bold text-sidebar-foreground">TranspoCarbon</span>
               <div className="text-xs text-sidebar-foreground/60 capitalize">{role === 'farmer' ? t('farmer') : role}</div>
             </div>
           </Link>
@@ -185,8 +185,8 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
       {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-card border-b border-border z-50 flex items-center justify-between px-4">
         <Link to={items[0]?.path || '/'} className="flex items-center gap-2">
-          <img src={logo} alt="AgroCarbon Logo" className="w-8 h-8 rounded-lg object-contain bg-white" />
-          <span className="font-display font-bold text-foreground">AgroCarbon</span>
+          <img src={logo} alt="TranspoCarbon Logo" className="w-8 h-8 rounded-lg object-contain bg-white" />
+          <span className="font-display font-bold text-foreground">TranspoCarbon</span>
         </Link>
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
