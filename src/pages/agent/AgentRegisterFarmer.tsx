@@ -469,19 +469,32 @@ export default function AgentRegisterFarmer() {
 
             // Check for duplicate phone number
             if (formData.phone && formData.phone.trim()) {
+                const phoneValue = formData.phone.trim();
+
+                // 1. Check in farmers collection (Agent-managed)
                 const phoneQuery = query(
                     collection(db, 'farmers'),
-                    where('phone', '==', formData.phone.trim())
+                    where('phone', '==', phoneValue)
                 );
                 const phoneSnapshot = await getDocs(phoneQuery);
 
-                // If editing, exclude current farmer from duplicate check
-                const duplicates = phoneSnapshot.docs.filter(doc => doc.id !== id);
+                // 2. Check in users collection (Individual farmers)
+                const userQuery = query(
+                    collection(db, 'users'),
+                    where('phone', '==', phoneValue)
+                );
+                const userSnapshot = await getDocs(userQuery);
 
-                if (duplicates.length > 0) {
+                // If editing, exclude current farmer from duplicate check in farmers collection
+                const duplicateFarmers = phoneSnapshot.docs.filter(doc => doc.id !== id);
+                const duplicateUsers = userSnapshot.docs;
+
+                if (duplicateFarmers.length > 0 || duplicateUsers.length > 0) {
                     toast({
-                        title: "Duplicate Phone Number",
-                        description: "This phone number is already registered with another farmer. Please use a unique phone number.",
+                        title: "Registration Conflict",
+                        description: duplicateUsers.length > 0
+                            ? "This phone number is already registered as an individual farmer. Please link the existing account or use a unique number."
+                            : "This phone number is already registered with another farmer in your registry.",
                         variant: "destructive"
                     });
                     setLoading(false);

@@ -10,18 +10,73 @@ export default function CompanyDashboard() {
   const { user } = useAuth();
   const [pddStatus, setPddStatus] = useState<string>('not_started');
   const [projectId, setProjectId] = useState<string>('');
+  const [stats, setStats] = useState({
+    totalFarmers: 0,
+    totalAcres: 0,
+    activeBatches: 0,
+    totalCO2: 0
+  });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user?.id) fetchPDDStatus();
+    if (user?.id) {
+      fetchDashboardData();
+    }
   }, [user]);
 
-  const fetchPDDStatus = async () => {
-    const q = query(collection(db, 'pdd_requests'), where('companyId', '==', user?.id));
-    const snap = await getDocs(q);
-    if (!snap.empty) {
-      const data = snap.docs[0].data();
-      setPddStatus(data.status);
-      setProjectId(data.registryProjectId || '');
+  const fetchDashboardData = async () => {
+    setLoading(true);
+    try {
+      // 1. Fetch PDD Status
+      const pddQ = query(collection(db, 'pdd_requests'), where('companyId', '==', user?.id));
+      const pddSnap = await getDocs(pddQ);
+      if (!pddSnap.empty) {
+        const data = pddSnap.docs[0].data();
+        setPddStatus(data.status);
+        setProjectId(data.registryProjectId || '');
+      }
+
+      // 2. Fetch Aggregated Stats from Accepted Applications
+      const appQ = query(
+        collection(db, 'project_applications'),
+        where('companyId', '==', user?.id),
+        where('status', '==', 'accepted')
+      );
+      const appSnap = await getDocs(appQ);
+
+      let acres = 0;
+      let co2 = 0;
+      const uniqueFarmerIds = new Set(); // To handle potential ID overlaps
+      const months = new Set();
+
+      appSnap.docs.forEach(doc => {
+        const data = doc.data();
+        acres += data.farmerAcres || 0;
+        co2 += data.farmerTotalCO2 || 0;
+        uniqueFarmerIds.add(data.farmerId);
+
+        if (data.createdAt) {
+          const date = data.createdAt.toDate();
+          const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+          months.add(monthKey);
+        }
+      });
+
+      // 3. Fetch Batch count from verification_requests
+      const batchQ = query(collection(db, 'verification_requests'), where('companyId', '==', user?.id));
+      const batchSnap = await getDocs(batchQ);
+
+      setStats({
+        totalFarmers: uniqueFarmerIds.size,
+        totalAcres: Number(acres.toFixed(1)),
+        activeBatches: batchSnap.size > 0 ? batchSnap.size : months.size,
+        totalCO2: Number(co2.toFixed(1))
+      });
+
+    } catch (err) {
+      console.error("Dashboard fetch error", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -62,7 +117,7 @@ export default function CompanyDashboard() {
                 <Users className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <div className="stat-value">127</div>
+                <div className="stat-value">{stats.totalFarmers}</div>
                 <div className="stat-label">Total Farmers</div>
               </div>
             </div>
@@ -74,7 +129,7 @@ export default function CompanyDashboard() {
                 <Leaf className="w-6 h-6 text-accent" />
               </div>
               <div>
-                <div className="stat-value">452</div>
+                <div className="stat-value">{stats.totalAcres}</div>
                 <div className="stat-label">Total Acres</div>
               </div>
             </div>
@@ -86,7 +141,7 @@ export default function CompanyDashboard() {
                 <Package className="w-6 h-6 text-info" />
               </div>
               <div>
-                <div className="stat-value">3</div>
+                <div className="stat-value">{stats.activeBatches}</div>
                 <div className="stat-label">Active Batches</div>
               </div>
             </div>
@@ -98,7 +153,7 @@ export default function CompanyDashboard() {
                 <TrendingUp className="w-6 h-6 text-white" />
               </div>
               <div>
-                <div className="stat-value">89.5</div>
+                <div className="stat-value">{stats.totalCO2}</div>
                 <div className="stat-label">Est. tCO₂</div>
               </div>
             </div>

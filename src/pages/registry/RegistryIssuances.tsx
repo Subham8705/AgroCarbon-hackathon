@@ -2,7 +2,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Archive, Leaf, Building2, Shield, Calendar, Download, Search, Filter, Loader2, CheckCircle, FileText, AlertCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
-import { collection, query, where, getDocs, doc, updateDoc, Timestamp, addDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc, updateDoc, Timestamp, addDoc } from 'firebase/firestore';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -110,28 +110,35 @@ export default function RegistryIssuances() {
       const projectID = selectedRequest.registryProjectId || 'PROJ';
       const year = new Date().getFullYear();
 
-      // We need to generate a unique block. 
       // For simplicity in this demo, we generate one range string. 
       // In a real system, we'd allocate a block in a separate collection to ensure uniqueness.
 
       const uniqueSeq = Date.now().toString().slice(-6); // Simple random-ish seq
       const startSerial = `${registryPrefix}-VCU-${projectID}-${year}-${uniqueSeq}`;
-      const endSerial = `${registryPrefix}-VCU-${projectID}-${year}-${parseInt(uniqueSeq) + Math.floor(selectedRequest.totalCredits)}`;
+      const endSerial = `${registryPrefix}-VCU-${projectID}-${year}-${parseInt(uniqueSeq) + Math.max(1, Math.round(selectedRequest.totalCredits))}`;
 
       const serialRange = `${startSerial} ... ${endSerial}`;
 
       // 2. Generate Individual Credits (Collection Logic)
-      // The user explicitly requested to verify via the 'issued_credits' collection.
-
-      const creditsCount = Math.floor(selectedRequest.totalCredits);
+      const creditsCount = Math.max(1, Math.round(selectedRequest.totalCredits));
       const batchOpPromises = [];
-
       let issuedCount = 0;
+
+      // Fetch the full verification request to get verifiedCredits map
+      const reqSnap = await getDoc(doc(db, 'verification_requests', selectedRequest.id));
+      const verifiedCredits = reqSnap.data()?.verifiedCredits || {};
+
+      console.log('🔍 DEBUG: Starting credit issuance');
+      console.log('📊 Total credits to issue:', creditsCount);
+      console.log('📋 Verified credits map:', verifiedCredits);
+      console.log('🔑 Number of plots:', Object.keys(verifiedCredits).length);
 
       // Helper to issue a single credit
       const issueCredit = (plotId: string) => {
         const uniqueSuffix = (parseInt(uniqueSeq) + issuedCount).toString().padStart(6, '0');
         const serialNumber = `${registryPrefix}-VCU-${projectID}-${year}-${uniqueSuffix}`;
+
+        console.log(`DEBUG: Preparing to issue credit ${issuedCount + 1}/${creditsCount} for plot ${plotId} with serial ${serialNumber}`);
 
         batchOpPromises.push(addDoc(collection(db, 'issued_credits'), {
           serialNumber: serialNumber,
@@ -144,19 +151,18 @@ export default function RegistryIssuances() {
           status: 'active',
           vintage: year,
           type: 'VCU'
-        }));
+        }).then(docRef => console.log(`DEBUG: Document written with ID: ${docRef.id}`)).catch(e => console.error("DEBUG: Error writing document", e)));
+
         issuedCount++;
       };
-
-      // Fetch the full verification request to get verifiedCredits map
-      const reqDoc = await getDocs(query(collection(db, 'verification_requests'), where('__name__', '==', selectedRequest.id)));
-      const verifiedCredits = reqDoc.docs[0]?.data()?.verifiedCredits || {};
 
       // 1. Distribute based on verifiedCredits map (plotId -> credit count)
       // This is what the verifier finalized
       if (Object.keys(verifiedCredits).length > 0) {
+        console.log('✅ Entering verifiedCredits loop');
         for (const [plotId, creditCount] of Object.entries(verifiedCredits)) {
-          const creditsForPlot = Math.floor(creditCount as number);
+          const creditsForPlot = Math.max(1, Math.round(creditCount as number));
+          console.log(`  📍 Plot ${plotId}: ${creditCount} credits → ${creditsForPlot} documents`);
 
           for (let k = 0; k < creditsForPlot; k++) {
             if (issuedCount >= creditsCount) break;
@@ -165,6 +171,8 @@ export default function RegistryIssuances() {
 
           if (issuedCount >= creditsCount) break;
         }
+      } else {
+        console.warn('⚠️ No verifiedCredits found! Using fallback.');
       }
 
       // 2. Handle any remainder (due to rounding)
@@ -172,10 +180,14 @@ export default function RegistryIssuances() {
       const fallbackPlotId = Object.keys(verifiedCredits)[0] || 'GENERAL';
 
       while (issuedCount < creditsCount) {
+        console.log(`  🔄 Issuing remainder credit ${issuedCount + 1} to ${fallbackPlotId}`);
         issueCredit(fallbackPlotId);
       }
 
+      console.log('📦 Total promises created:', batchOpPromises.length);
+      console.log('💾 Executing Promise.all to write documents...');
       await Promise.all(batchOpPromises);
+      console.log('✅ All documents written successfully!');
 
       // 3. Update Verification Request Status
       const reqRef = doc(db, 'verification_requests', selectedRequest.id);

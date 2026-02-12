@@ -181,13 +181,16 @@ export default function CompanyRequests() {
                 status: newStatus
             });
 
-            // 2. Update Farmer (Sync Rejection)
+            // 2. Update Farmer (Only if agent-managed)
             if (application && application.farmerId) {
                 const farmerRef = doc(db, 'farmers', application.farmerId);
-                batch.update(farmerRef, {
-                    onboardingStatus: 'rejected',
-                    'projectStatus.status': 'rejected'
-                });
+                const farmerSnap = await getDoc(farmerRef);
+                if (farmerSnap.exists()) {
+                    batch.update(farmerRef, {
+                        onboardingStatus: 'rejected',
+                        'projectStatus.status': 'rejected'
+                    });
+                }
             }
 
             await batch.commit();
@@ -225,15 +228,18 @@ export default function CompanyRequests() {
                 meetingSlot: selectedSlot
             });
 
-            // 2. Update Farmer Status (Sync)
+            // 2. Update Farmer Status (Only if agent-managed)
             if (application && application.farmerId) {
                 const farmerRef = doc(db, 'farmers', application.farmerId);
-                batch.update(farmerRef, {
-                    onboardingStatus: 'accepted',
-                    'projectStatus.status': 'approved',
-                    'projectStatus.meetingDate': selectedDate,
-                    'projectStatus.meetingSlot': selectedSlot
-                });
+                const farmerSnap = await getDoc(farmerRef);
+                if (farmerSnap.exists()) {
+                    batch.update(farmerRef, {
+                        onboardingStatus: 'accepted',
+                        'projectStatus.status': 'approved',
+                        'projectStatus.meetingDate': selectedDate,
+                        'projectStatus.meetingSlot': selectedSlot
+                    });
+                }
             }
 
             await batch.commit();
